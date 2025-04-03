@@ -15,6 +15,12 @@ import { RouterView } from 'vue-router'
           <li class="nav-item">
             <RouterLink class="nav-link" to="/client">Clients</RouterLink>
           </li>
+          <li class="nav-item">
+            <RouterLink class="nav-link" to="/article">Articles</RouterLink>
+          </li>
+          <li class="nav-item">
+            <RouterLink class="nav-link" to="/login">Login</RouterLink>
+          </li>
         </ul>
         <span class="navbar-text">
           <i class="fa-solid fa-user"></i> Aktivni Korisnik

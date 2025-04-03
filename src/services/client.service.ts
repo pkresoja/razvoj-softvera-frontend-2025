@@ -9,7 +9,15 @@ export class ClientService {
         return await MainService.useAxios(`/client/${id}`)
     }
 
+    static async createClient(model: any) {
+        return await MainService.useAxios('/client', 'post', model)
+    }
+
     static async updateClient(id: number, data: any) {
         return await MainService.useAxios(`/client/${id}`, 'put', data)
+    }
+
+    static async deleteClient(id: number) {
+        return await MainService.useAxios(`/client/${id}`, 'delete')
     }
 }

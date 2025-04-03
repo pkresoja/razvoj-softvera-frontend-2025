@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import { ClientService } from '@/services/client.service';
+import { MainService } from '@/services/main.service';
 import { ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 
@@ -51,7 +52,7 @@ function doUpdate() {
         </div>
         <div class="mb-3">
             <label for="time" class="form-label">Updated At:</label>
-            <input type="text" class="form-control" id="time" v-model="client.createdAt" disabled>
+            <input type="text" class="form-control" id="time" :value="MainService.updatedAt(client)" disabled>
         </div>
         <button class="btn btn-primary tbn-success">
             <i class="fa-solid fa-floppy-disk"></i> Save Now

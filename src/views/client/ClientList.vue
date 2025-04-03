@@ -11,6 +11,13 @@ function loadData() {
         .then(rsp => clients.value = rsp.data)
 }
 
+function doDelete(client: any) {
+    ClientService.deleteClient(client.clientId)
+        .then(rsp => {
+            clients.value = clients.value.filter((c: any) => c.clientId !== client.clientId)
+        })
+}
+
 onMounted(() => loadData())
 </script>
 
@@ -43,10 +50,13 @@ onMounted(() => loadData())
                 <td>{{ client.taxId ? client.taxId : 'N/A' }}</td>
                 <td>
                     <div class="btn-group">
+                        <RouterLink class="btn btn-sm btn-light" :to="`/client/${client.clientId}/vehicle`">
+                            <i class="fa-solid fa-car"></i>
+                        </RouterLink>
                         <RouterLink class="btn btn-sm btn-success" :to="`/client/${client.clientId}`">
                             <i class="fa-solid fa-pen-to-square"></i>
                         </RouterLink>
-                        <button class="btn btn-sm btn-danger" type="button">
+                        <button class="btn btn-sm btn-danger" type="button" @click="doDelete(client)">
                             <i class="fa-solid fa-trash-can"></i>
                         </button>
                     </div>

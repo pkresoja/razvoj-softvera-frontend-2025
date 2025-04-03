@@ -18,4 +18,8 @@ export class MainService {
             data: body
         })
     }
+
+    static updatedAt(obj: any) {
+        return new Date(obj.updatedAt ? obj.updatedAt : obj.createdAt).toLocaleString('sr-RS')
+    }
 }
