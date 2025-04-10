@@ -1,20 +1,27 @@
 <script lang="ts" setup>
 import Search from '@/components/Search.vue';
+import type { ClientModel } from '@/models/client.model';
+import type { VehicleModel } from '@/models/vehicle.model';
+import { ClientService } from '@/services/client.service';
 import { VehicleService } from '@/services/vehicle.service';
 import { onMounted, ref } from 'vue';
 import { useRoute } from 'vue-router';
 
-const vehicles = ref()
+const vehicles = ref<VehicleModel[]>()
 const route = useRoute()
 const id = Number(route.params.id)
 const search = ref('')
 
+const client = ref<ClientModel>()
+ClientService.getClientById(id)
+    .then(rsp => client.value = rsp.data)
+
 function loadData() {
-    VehicleService.getVehicleByClientId(id,search.value)
+    VehicleService.getVehicleByClientId(id, search.value)
         .then(rsp => vehicles.value = rsp.data)
 }
 
-function doDelete(model: any) {
+function doDelete(vehicle: VehicleModel) {
     
 }
 
@@ -22,10 +29,28 @@ onMounted(() => loadData())
 </script>
 
 <template>
-    <h3>Vehicles by client {{ id }}</h3>
+    <nav aria-label="breadcrumb" v-if="client">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item">
+                <RouterLink to="/client">Clients</RouterLink>
+            </li>
+            <li class="breadcrumb-item">
+                <RouterLink :to="`/client/${client.clientId}`">
+                    <span v-if="client.taxId">
+                        {{ client.name }} ({{ client.taxId }})
+                    </span>
+                    <span v-else>{{ client.name }}</span>
+                </RouterLink>
+            </li>
+            <li class="breadcrumb-item active" aria-current="page">
+                Vehicles
+            </li>
+        </ol>
+    </nav>
+    <h3>Vehicles</h3>
     <Search v-model="search" @change="loadData">
         <div class="btn-group">
-            <RouterLink class="btn btn-primary" :to="`/client/${id}/vehicle/new`">
+            <RouterLink class="btn btn-primary" :to="`/vehicle/new?client=${id}`">
                 <i class="fa-solid fa-plus"></i> Add Vehicle
             </RouterLink>
         </div>

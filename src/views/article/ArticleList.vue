@@ -1,9 +1,10 @@
 <script lang="ts" setup>
 import Search from '@/components/Search.vue';
+import type { ArticleModel } from '@/models/article.model';
 import { ArticleService } from '@/services/article.service';
 import { onMounted, ref } from 'vue';
 
-const articles = ref()
+const articles = ref<ArticleModel[]>()
 const search = ref('')
 
 function loadData() {
@@ -11,11 +12,12 @@ function loadData() {
         .then(rsp => articles.value = rsp.data)
 }
 
-function doDelete(article: any) {
-    ArticleService.deleteArticle(article.articleId)
-        .then(rsp => {
-            articles.value = articles.value.filter((a: any) => a.articleId !== article.articleId)
-        })
+async function doDelete(article: ArticleModel) {
+    if (articles.value == undefined) return
+    await ArticleService.deleteArticle(article.articleId)
+    articles.value = articles.value.filter(a =>
+        a.articleId !== article.articleId
+    )
 }
 
 onMounted(() => loadData())

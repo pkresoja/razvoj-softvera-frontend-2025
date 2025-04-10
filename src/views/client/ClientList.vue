@@ -1,9 +1,10 @@
 <script lang="ts" setup>
 import Search from '@/components/Search.vue';
+import type { ClientModel } from '@/models/client.model';
 import { ClientService } from '@/services/client.service';
 import { onMounted, ref } from 'vue';
 
-const clients = ref()
+const clients = ref<ClientModel[]>()
 const search = ref('')
 
 function loadData() {
@@ -11,11 +12,12 @@ function loadData() {
         .then(rsp => clients.value = rsp.data)
 }
 
-function doDelete(client: any) {
-    ClientService.deleteClient(client.clientId)
-        .then(rsp => {
-            clients.value = clients.value.filter((c: any) => c.clientId !== client.clientId)
-        })
+async function doDelete(client: ClientModel) {
+    if (clients.value == undefined) return
+    await ClientService.deleteClient(client.clientId)
+    clients.value = clients.value.filter(c =>
+        c.clientId !== client.clientId
+    )
 }
 
 onMounted(() => loadData())

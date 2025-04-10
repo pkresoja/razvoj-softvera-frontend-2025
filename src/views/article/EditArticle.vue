@@ -1,10 +1,11 @@
 <script lang="ts" setup>
+import type { ArticleModel } from '@/models/article.model';
 import { ArticleService } from '@/services/article.service';
 import { MainService } from '@/services/main.service';
 import { ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 
-const article = ref()
+const article = ref<ArticleModel>()
 const route = useRoute()
 const router = useRouter()
 const id = Number(route.params.id)

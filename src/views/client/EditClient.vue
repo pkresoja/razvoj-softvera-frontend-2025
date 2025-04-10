@@ -1,10 +1,11 @@
 <script lang="ts" setup>
+import type { ClientModel } from '@/models/client.model';
 import { ClientService } from '@/services/client.service';
 import { MainService } from '@/services/main.service';
 import { ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 
-const client = ref()
+const client = ref<ClientModel>()
 const route = useRoute()
 const router = useRouter()
 const id = Number(route.params.id)
