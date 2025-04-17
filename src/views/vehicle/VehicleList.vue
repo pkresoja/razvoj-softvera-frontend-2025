@@ -47,7 +47,7 @@ onMounted(() => loadData())
             </li>
         </ol>
     </nav>
-    <h3>Vehicles</h3>
+    <h3>Client Vehicles</h3>
     <Search v-model="search" @change="loadData">
         <div class="btn-group">
             <RouterLink class="btn btn-primary" :to="`/vehicle/new?client=${id}`">
@@ -75,6 +75,9 @@ onMounted(() => loadData())
                 <td>{{ v.year }}</td>
                 <td>
                     <div class="btn-group">
+                        <RouterLink class="btn btn-sm btn-light" :to="`/vehicle/${v.vehicleId}/invoice`">
+                            <i class="fa-solid fa-file-invoice-dollar"></i>
+                        </RouterLink>
                         <RouterLink class="btn btn-sm btn-success" :to="`/vehicle/${v.vehicleId}`">
                             <i class="fa-solid fa-pen-to-square"></i>
                         </RouterLink>

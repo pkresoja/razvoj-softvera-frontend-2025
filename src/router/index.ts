@@ -10,6 +10,8 @@ import VehicleList from '@/views/vehicle/VehicleList.vue'
 import NotFound from '@/views/NotFound.vue'
 import EditVehcile from '@/views/vehicle/EditVehcile.vue'
 import NewVehicle from '@/views/vehicle/NewVehicle.vue'
+import InvoiceList from '@/views/invoice/InvoiceList.vue'
+import EditInvoice from '@/views/invoice/EditInvoice.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -82,10 +84,24 @@ const router = createRouter({
       }
     },
     {
+      path: '/vehicle/:id/invoice',
+      component: InvoiceList,
+      meta: {
+        title: 'Invoices'
+      }
+    },
+    {
       path: '/vehicle/:id',
       component: EditVehcile,
       meta: {
         title: 'Edit Vehicle'
+      }
+    },
+    {
+      path: '/invoice/:id',
+      component: EditInvoice,
+      meta: {
+        title: 'Edit Invoice'
       }
     },
     {
