@@ -1,3 +1,4 @@
+import type { ClientModel } from "./client.model"
 import type { ModelModel } from "./model.model"
 
 export interface VehicleModel {
@@ -8,4 +9,5 @@ export interface VehicleModel {
     vin: string
     year: number
     model: ModelModel
+    client: ClientModel
 }

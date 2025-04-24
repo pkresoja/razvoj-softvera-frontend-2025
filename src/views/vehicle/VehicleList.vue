@@ -22,7 +22,7 @@ function loadData() {
 }
 
 function doDelete(vehicle: VehicleModel) {
-    
+
 }
 
 onMounted(() => loadData())
@@ -34,16 +34,11 @@ onMounted(() => loadData())
             <li class="breadcrumb-item">
                 <RouterLink to="/client">Clients</RouterLink>
             </li>
-            <li class="breadcrumb-item">
-                <RouterLink :to="`/client/${client.clientId}`">
-                    <span v-if="client.taxId">
-                        {{ client.name }} ({{ client.taxId }})
-                    </span>
-                    <span v-else>{{ client.name }}</span>
-                </RouterLink>
-            </li>
             <li class="breadcrumb-item active" aria-current="page">
-                Vehicles
+                <span v-if="client.taxId">
+                    {{ client.name }} ({{ client.taxId }})
+                </span>
+                <span v-else>{{ client.name }}</span>
             </li>
         </ol>
     </nav>

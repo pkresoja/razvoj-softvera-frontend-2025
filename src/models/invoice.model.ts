@@ -1,3 +1,4 @@
+import type { InvoiceArticleModel } from "./invoice.article.model";
 import type { VehicleModel } from "./vehicle.model";
 
 export interface InvoiceModel {
@@ -8,4 +9,5 @@ export interface InvoiceModel {
     generatedAt: string
     paidAt: string
     vehicle: VehicleModel
+    invoiceArticles: InvoiceArticleModel[]
 }

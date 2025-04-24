@@ -29,6 +29,14 @@ function doDelete(invoice: InvoiceModel) {
             i.invoiceId !== invoice.invoiceId
         ))
 }
+
+function calculateTotal(invoice: InvoiceModel) {
+    let sum = 0
+    invoice.invoiceArticles.forEach(i=>{
+        sum += (i.price * Math.abs((100 - i.discount) / 100))
+    })
+    return sum
+}
 </script>
 
 <template>
@@ -38,31 +46,21 @@ function doDelete(invoice: InvoiceModel) {
                 <RouterLink to="/client">Clients</RouterLink>
             </li>
             <li class="breadcrumb-item">
-                <RouterLink :to="`/client/${client.clientId}`">
+                <RouterLink :to="`/client/${client.clientId}/vehicle`">
                     <span v-if="client.taxId">
                         {{ client.name }} ({{ client.taxId }})
                     </span>
                     <span v-else>{{ client.name }}</span>
                 </RouterLink>
             </li>
-            <li class="breadcrumb-item">
-                <RouterLink :to="`/client/${client.clientId}/vehicle`">
-                    Vehicles
-                </RouterLink>
-            </li>
-            <li class="breadcrumb-item">
-                <RouterLink :to="`/vehicle/${vehicle.vehicleId}`">
-                    {{ vehicle.regPlate }} ({{ vehicle.vin }})
-                </RouterLink>
-            </li>
             <li class="breadcrumb-item active" aria-current="page">
-                Invoices
+                {{ vehicle.regPlate }} ({{ vehicle.vin }})
             </li>
         </ol>
     </nav>
     <h3>Vehicle Invoices</h3>
     <div class="btn-group">
-        <RouterLink class="btn btn-primary" :to="`/invoice/new?client=${id}`">
+        <RouterLink class="btn btn-primary" :to="`/invoice/new?vehicle=${id}`">
             <i class="fa-solid fa-plus"></i> Add Invoice
         </RouterLink>
     </div>
@@ -70,6 +68,8 @@ function doDelete(invoice: InvoiceModel) {
         <thead>
             <tr>
                 <th scope="col">#</th>
+                <th scope="col">Item Count</th>
+                <th scope="col">Total</th>
                 <th scope="col">Created At</th>
                 <th scope="col">Updated At</th>
                 <th scope="col">Generated At</th>
@@ -80,6 +80,8 @@ function doDelete(invoice: InvoiceModel) {
         <tbody v-if="invoices">
             <tr v-for="i of invoices">
                 <th scope="row">{{ i.invoiceId }}</th>
+                <td>{{ i.invoiceArticles.length }}</td>
+                <td>{{ calculateTotal(i) }} <i class="fa-solid fa-euro-sign"></i></td>
                 <td>{{ formatDate(i.createdAt) }}</td>
                 <td>{{ formatDate(i.updatedAt) }}</td>
                 <td>{{ formatDate(i.generatedAt) }}</td>
