@@ -14,6 +14,7 @@ import InvoiceList from '@/views/invoice/InvoiceList.vue'
 import EditInvoice from '@/views/invoice/EditInvoice.vue'
 import NewInvoice from '@/views/invoice/NewInvoice.vue'
 import InvoiceArticleList from '@/views/invoice/article/InvoiceArticleList.vue'
+import EditInvoiceArticle from '@/views/invoice/article/EditInvoiceArticle.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -107,10 +108,17 @@ const router = createRouter({
       }
     },
     {
+      path: '/invoice/article/:id',
+      component: EditInvoiceArticle,
+      meta: {
+        title: 'Edit Invoice Article'
+      }
+    },
+    {
       path: '/invoice/:id/article',
       component: InvoiceArticleList,
       meta: {
-        title: 'ArticleList'
+        title: 'Article List'
       }
     },
     {

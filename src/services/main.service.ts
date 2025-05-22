@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const client = axios.create({
-    baseURL: 'http://localhost:44000/api',
+    baseURL: import.meta.env.VITE_APP_API_URL,
     headers: {
         'Accept': 'application/json'
     },
@@ -11,7 +11,11 @@ const client = axios.create({
 })
 
 export class MainService {
-    static async useAxios(path: string, method: string = 'get', body: any = {}) {
+    static async useAxios(
+        path: string,
+        method: 'get' | 'post' | 'put' | 'delete' = 'get',
+        body: any = {}
+    ) {
         return await client.request({
             url: path,
             method: method,

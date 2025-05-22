@@ -1,7 +1,7 @@
 import { MainService } from "./main.service";
 
 export class ArticleService {
-    static async getArtiles(search: string) {
+    static async getArtiles(search: string = '') {
         return await MainService.useAxios(`/article?search=${search}`)
     }
 

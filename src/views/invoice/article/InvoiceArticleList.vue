@@ -1,8 +1,6 @@
 <script lang="ts" setup>
-import type { ClientModel } from '@/models/client.model';
 import type { InvoiceArticleModel } from '@/models/invoice.article.model';
 import type { InvoiceModel } from '@/models/invoice.model';
-import type { VehicleModel } from '@/models/vehicle.model';
 import { MainService } from '@/services/main.service';
 import { formatDate } from '@/utils';
 import { ref } from 'vue';
@@ -16,7 +14,13 @@ MainService.useAxios(`/invoice/${id}/details`)
     .then(rsp => invoice.value = rsp.data)
 
 function doDelete(article: InvoiceArticleModel) {
-
+    MainService.useAxios(`/invoice/article/${article.invoiceArticleId}`, 'delete')
+        .then(rsp => {
+            if (invoice.value == null) return
+            invoice.value.invoiceArticles = invoice.value.invoiceArticles.filter(ia =>
+                ia.invoiceArticleId !== article.invoiceArticleId
+            )
+        })
 }
 
 function calculateTotal() {
@@ -55,7 +59,7 @@ function calculateTotal() {
     </nav>
     <h3>Invoice Articles</h3>
     <div class="btn-group">
-        <RouterLink class="btn btn-primary" to="/invoice-article/new">
+        <RouterLink class="btn btn-primary" :to="`/invoice/article/new?invoice=${id}`">
             <i class="fa-solid fa-plus"></i> Add Invoice Article
         </RouterLink>
     </div>
@@ -85,7 +89,7 @@ function calculateTotal() {
                 <td>{{ formatDate(a.updatedAt ?? a.createdAt) }}</td>
                 <td>
                     <div class="btn-group">
-                        <RouterLink class="btn btn-sm btn-success" :to="`/invoice-article/${a.invoiceArticleId}`">
+                        <RouterLink class="btn btn-sm btn-success" :to="`/invoice/article/${a.invoiceArticleId}`">
                             <i class="fa-solid fa-pen-to-square"></i>
                         </RouterLink>
                         <button class="btn btn-sm btn-danger" type="button" @click="doDelete(a)">
@@ -95,7 +99,7 @@ function calculateTotal() {
                 </td>
             </tr>
         </tbody>
-        <tfoot >
+        <tfoot>
             <tr>
                 <td colspan="8">Total Amount: {{ calculateTotal() }} €</td>
             </tr>
