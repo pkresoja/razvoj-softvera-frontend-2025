@@ -1,4 +1,6 @@
 <script lang="ts" setup>
+import Navigation from '@/components/Navigation.vue';
+import { useLogout } from '@/hooks/logout.hook';
 import { ClientService } from '@/services/client.service';
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
@@ -10,6 +12,7 @@ const client = ref<any>({
     email: '',
     taxId: ''
 })
+const logout = useLogout()
 
 function doCreate() {
     if (client.value.name === '' || client.value.phone === '' || client.value.email === '') {
@@ -19,10 +22,12 @@ function doCreate() {
     
     ClientService.createClient(client.value)
         .then(rsp => router.push('/client'))
+        .catch(e => logout(e))
 }
 </script>
 
 <template>
+    <Navigation />
     <nav aria-label="breadcrumb">
         <ol class="breadcrumb">
             <li class="breadcrumb-item">

@@ -1,5 +1,7 @@
 <script lang="ts" setup>
+import Navigation from '@/components/Navigation.vue';
 import Search from '@/components/Search.vue';
+import { useLogout } from '@/hooks/logout.hook';
 import type { ClientModel } from '@/models/client.model';
 import type { VehicleModel } from '@/models/vehicle.model';
 import { ClientService } from '@/services/client.service';
@@ -11,24 +13,30 @@ const vehicles = ref<VehicleModel[]>()
 const route = useRoute()
 const id = Number(route.params.id)
 const search = ref('')
+const logout = useLogout()
 
 const client = ref<ClientModel>()
 ClientService.getClientById(id)
     .then(rsp => client.value = rsp.data)
+    .catch(e => logout(e))
 
 function loadData() {
     VehicleService.getVehicleByClientId(id, search.value)
         .then(rsp => vehicles.value = rsp.data)
+        .catch(e => logout(e))
 }
 
-function doDelete(vehicle: VehicleModel) {
-
+function doDelete(model: VehicleModel) {
+    VehicleService.deleteVehicle(model.vehicleId)
+        .then(rsp => vehicles.value = vehicles.value?.filter(v => v.vehicleId !== model.vehicleId))
+        .catch(e => logout(e))
 }
 
 onMounted(() => loadData())
 </script>
 
 <template>
+    <Navigation />
     <nav aria-label="breadcrumb" v-if="client">
         <ol class="breadcrumb">
             <li class="breadcrumb-item">

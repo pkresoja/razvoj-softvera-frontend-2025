@@ -1,4 +1,6 @@
 <script lang="ts" setup>
+import Navigation from '@/components/Navigation.vue';
+import { useLogout } from '@/hooks/logout.hook';
 import type { ArticleModel } from '@/models/article.model';
 import type { InvoiceArticleModel } from '@/models/invoice.article.model';
 import type { InvoiceModel } from '@/models/invoice.model';
@@ -14,30 +16,37 @@ const invoiceArticle = ref<InvoiceArticleModel>()
 
 const route = useRoute()
 const router = useRouter()
+const logout = useLogout()
 const id = Number(route.params.id)
 
 async function loadData() {
-    const invoiceArticleRsp = await InvoiceService.getInvoiceArticleDetailsById(id)
-    invoiceArticle.value = invoiceArticleRsp.data
+    try {
+        const invoiceArticleRsp = await InvoiceService.getInvoiceArticleDetailsById(id)
+        invoiceArticle.value = invoiceArticleRsp.data
 
-    const articleRsp = await ArticleService.getArtiles()
-    articles.value = articleRsp.data
+        const articleRsp = await ArticleService.getArtiles()
+        articles.value = articleRsp.data
 
-    const invoiceRsp = await InvoiceService.getInvoicesForVehicleId(
-        invoiceArticle.value!.invoice.vehicleId
-    )
-    invoices.value = invoiceRsp.data
+        const invoiceRsp = await InvoiceService.getInvoicesForVehicleId(
+            invoiceArticle.value!.invoice.vehicleId
+        )
+        invoices.value = invoiceRsp.data
+    } catch (e) {
+        logout(e)
+    }
 }
 
 function doUpdate() {
     MainService.useAxios(`/invoice/article/${id}`, 'put', invoiceArticle.value)
         .then(rsp => router.push(`/invoice/${invoiceArticle.value?.invoiceId}/article`))
+        .catch(e => logout(e))
 }
 
-onMounted(()=>loadData())
+onMounted(() => loadData())
 </script>
 
 <template>
+    <Navigation />
     <nav aria-label="breadcrumb">
         <ol class="breadcrumb">
             <li class="breadcrumb-item">
@@ -76,7 +85,7 @@ onMounted(()=>loadData())
         </div>
         <div class="mb-3">
             <label for="time" class="form-label">Discount:</label>
-            <input type="number" class="form-control" id="time"  v-model="invoiceArticle.discount">
+            <input type="number" class="form-control" id="time" v-model="invoiceArticle.discount">
         </div>
         <div class="mb-3">
             <label for="time" class="form-label">Updated At:</label>

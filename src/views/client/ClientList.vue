@@ -1,29 +1,38 @@
 <script lang="ts" setup>
+import Navigation from '@/components/Navigation.vue';
 import Search from '@/components/Search.vue';
+import { useLogout } from '@/hooks/logout.hook';
 import type { ClientModel } from '@/models/client.model';
 import { ClientService } from '@/services/client.service';
 import { onMounted, ref } from 'vue';
 
 const clients = ref<ClientModel[]>()
+const logout = useLogout()
 const search = ref('')
 
 function loadData() {
     ClientService.getClients(search.value)
         .then(rsp => clients.value = rsp.data)
+        .catch(e => logout(e))
 }
 
 async function doDelete(client: ClientModel) {
+    try {
     if (clients.value == undefined) return
     await ClientService.deleteClient(client.clientId)
     clients.value = clients.value.filter(c =>
         c.clientId !== client.clientId
-    )
+    )}
+    catch (e) {
+        logout(e)
+    }
 }
 
 onMounted(() => loadData())
 </script>
 
 <template>
+    <Navigation />
     <h3>Clients</h3>
     <Search v-model="search" @change="loadData">
         <div class="btn-group">

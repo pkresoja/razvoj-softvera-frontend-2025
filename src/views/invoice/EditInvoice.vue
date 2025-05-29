@@ -1,4 +1,6 @@
 <script lang="ts" setup>
+import Navigation from '@/components/Navigation.vue';
+import { useLogout } from '@/hooks/logout.hook';
 import type { InvoiceModel } from '@/models/invoice.model';
 import type { VehicleModel } from '@/models/vehicle.model';
 import { MainService } from '@/services/main.service';
@@ -9,6 +11,7 @@ const vehicles = ref<VehicleModel[]>()
 const invoice = ref<InvoiceModel>()
 const route = useRoute()
 const router = useRouter()
+const logout = useLogout()
 const id = Number(route.params.id)
 
 MainService.useAxios(`/invoice/${id}`)
@@ -16,15 +19,18 @@ MainService.useAxios(`/invoice/${id}`)
         invoice.value = rsp.data
         MainService.useAxios(`/vehicle/client/vehicle/${rsp.data.vehicleId}`)
             .then(rsp => vehicles.value = rsp.data)
+            .catch(e => logout(e))
     })
 
 function doUpdate() {
     MainService.useAxios(`/invoice/${id}`, 'put', invoice.value)
         .then(rsp => router.push(`/vehicle/${invoice.value?.vehicleId}/invoice`))
+        .catch(e => logout(e))
 }
 </script>
 
 <template>
+    <Navigation />
     <nav aria-label="breadcrumb">
         <ol class="breadcrumb">
             <li class="breadcrumb-item">

@@ -1,4 +1,6 @@
 <script lang="ts" setup>
+import Navigation from '@/components/Navigation.vue';
+import { useLogout } from '@/hooks/logout.hook';
 import { ArticleService } from '@/services/article.service';
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
@@ -9,14 +11,17 @@ const article = ref({
     partNumber: ''
 })
 const router = useRouter()
+const logout = useLogout()
 
 function doCreate() {
     ArticleService.createArticle(article.value)
         .then(rsp => router.push('/article'))
+        .catch(e => logout(e))
 }
 </script>
 
 <template>
+    <Navigation />
     <nav aria-label="breadcrumb">
         <ol class="breadcrumb">
             <li class="breadcrumb-item">

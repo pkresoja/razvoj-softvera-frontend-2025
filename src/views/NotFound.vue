@@ -1,4 +1,10 @@
+<script setup lang="ts">
+import Navigation from '@/components/Navigation.vue';
+
+</script>
+
 <template>
+    <Navigation />
     <div class="mb-3 mx-auto text-center">
         <h3>Page Not Found</h3>
         <p>Seams like the page you have requested doesn't exists!</p>

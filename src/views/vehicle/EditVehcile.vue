@@ -1,4 +1,6 @@
 <script lang="ts" setup>
+import Navigation from '@/components/Navigation.vue';
+import { useLogout } from '@/hooks/logout.hook';
 import type { ClientModel } from '@/models/client.model';
 import type { ModelModel } from '@/models/model.model';
 import type { VehicleModel } from '@/models/vehicle.model';
@@ -13,24 +15,30 @@ const clients = ref<ClientModel[]>()
 const models = ref<ModelModel[]>()
 const route = useRoute()
 const router = useRouter()
+const logout = useLogout()
 const id = Number(route.params.id)
 
 VehicleService.getVehicleById(id)
     .then(rsp => vehicle.value = rsp.data)
+    .catch(e => logout(e))
 
 ClientService.getClients()
     .then(rsp => clients.value = rsp.data)
+    .catch(e => logout(e))
 
 VehicleService.getVehicleModels()
     .then(rsp => models.value = rsp.data)
+    .catch(e => logout(e))
 
 function doUpdate() {
     VehicleService.updateVehicle(id, vehicle.value)
         .then(rsp => router.push(`/client/${vehicle.value?.clientId}/vehicle`))
+        .catch(e => logout(e))
 }
 </script>
 
 <template>
+    <Navigation />
     <nav aria-label="breadcrumb">
         <ol class="breadcrumb">
             <li class="breadcrumb-item">

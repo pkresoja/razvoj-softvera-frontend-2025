@@ -1,4 +1,6 @@
 <script lang="ts" setup>
+import Navigation from '@/components/Navigation.vue';
+import { useLogout } from '@/hooks/logout.hook';
 import type { ClientModel } from '@/models/client.model';
 import type { ModelModel } from '@/models/model.model';
 import { ClientService } from '@/services/client.service';
@@ -10,6 +12,7 @@ const clients = ref<ClientModel[]>()
 const models = ref<ModelModel[]>()
 const router = useRouter()
 const route = useRoute()
+const logout = useLogout()
 
 function extractId() {
     if (!route.query.client) return 0
@@ -33,20 +36,24 @@ ClientService.getClients()
         }
         clients.value = rsp.data
     })
+    .catch(e => logout(e))
 
 VehicleService.getVehicleModels()
     .then(rsp => {
         vehicle.value.modelId = rsp.data[0].modelId
         models.value = rsp.data
     })
+    .catch(e => logout(e))
 
 function doCreate() {
     VehicleService.createVehicle(vehicle.value)
         .then(rsp => router.push(`/client/${vehicle.value?.clientId}/vehicle`))
+        .catch(e => logout(e))
 }
 </script>
 
 <template>
+    <Navigation />
     <nav aria-label="breadcrumb">
         <ol class="breadcrumb">
             <li class="breadcrumb-item">

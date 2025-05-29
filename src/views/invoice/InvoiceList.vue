@@ -1,4 +1,6 @@
 <script lang="ts" setup>
+import Navigation from '@/components/Navigation.vue';
+import { useLogout } from '@/hooks/logout.hook';
 import type { ClientModel } from '@/models/client.model';
 import type { InvoiceModel } from '@/models/invoice.model';
 import type { VehicleModel } from '@/models/vehicle.model';
@@ -12,6 +14,7 @@ const id = Number(route.params.id)
 const vehicle = ref<VehicleModel>()
 const client = ref<ClientModel>()
 const invoices = ref<InvoiceModel[]>()
+const logout = useLogout()
 
 MainService.useAxios(`/vehicle/${id}`)
     .then(rsp => {
@@ -19,15 +22,18 @@ MainService.useAxios(`/vehicle/${id}`)
         MainService.useAxios(`/client/${rsp.data.clientId}`)
             .then(rsp => client.value = rsp.data)
     })
+    .catch(e => logout(e))
 
 MainService.useAxios(`/invoice/vehicle/${id}`)
     .then(rsp => invoices.value = rsp.data)
+    .catch(e => logout(e))
 
 function doDelete(invoice: InvoiceModel) {
     MainService.useAxios(`/invoice/${invoice.invoiceId}`, 'delete')
         .then(rsp => invoices.value = invoices.value?.filter(i =>
             i.invoiceId !== invoice.invoiceId
         ))
+        .catch(e => logout(e))
 }
 
 function calculateTotal(invoice: InvoiceModel) {
@@ -40,6 +46,7 @@ function calculateTotal(invoice: InvoiceModel) {
 </script>
 
 <template>
+    <Navigation />
     <nav aria-label="breadcrumb" v-if="vehicle && client">
         <ol class="breadcrumb">
             <li class="breadcrumb-item">

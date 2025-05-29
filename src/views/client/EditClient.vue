@@ -1,4 +1,6 @@
 <script lang="ts" setup>
+import Navigation from '@/components/Navigation.vue';
+import { useLogout } from '@/hooks/logout.hook';
 import type { ClientModel } from '@/models/client.model';
 import { ClientService } from '@/services/client.service';
 import { MainService } from '@/services/main.service';
@@ -8,17 +10,22 @@ import { useRoute, useRouter } from 'vue-router';
 const client = ref<ClientModel>()
 const route = useRoute()
 const router = useRouter()
+const logout = useLogout()
 const id = Number(route.params.id)
+
 ClientService.getClientById(id)
     .then(rsp => client.value = rsp.data)
+    .catch(e => logout(e))
 
 function doUpdate() {
     ClientService.updateClient(id, client.value)
         .then(rsp => router.push('/client'))
+        .catch(e => logout(e))
 }
 </script>
 
 <template>
+    <Navigation />
     <nav aria-label="breadcrumb">
         <ol class="breadcrumb">
             <li class="breadcrumb-item">

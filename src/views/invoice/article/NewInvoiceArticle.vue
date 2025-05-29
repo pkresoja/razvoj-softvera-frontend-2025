@@ -1,4 +1,6 @@
 <script lang="ts" setup>
+import Navigation from '@/components/Navigation.vue';
+import { useLogout } from '@/hooks/logout.hook';
 import type { ArticleModel } from '@/models/article.model';
 import type { InvoiceArticleModel } from '@/models/invoice.article.model';
 import type { InvoiceModel } from '@/models/invoice.model';
@@ -9,7 +11,8 @@ import { onMounted, ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 
 const articles = ref<ArticleModel[]>()
-const invoices = ref<InvoiceModel[]>()
+const invoice = ref<InvoiceModel>()
+const logout = useLogout()
 
 const route = useRoute()
 const router = useRouter()
@@ -23,26 +26,34 @@ const invoiceArticle = ref({
 })
 
 async function loadData() {
-    const articleRsp = await ArticleService.getArtiles()
-    articles.value = articleRsp.data
+    try {
+        const articleRsp = await ArticleService.getArtiles()
+        articles.value = articleRsp.data
+        invoiceArticle.value.articleId = articleRsp.data[0].articleId
+        invoiceArticle.value.price = articleRsp.data[0].price
 
+        const invoiceRsp = await InvoiceService.getInvoiceDetailsById(id)
+        invoice.value = invoiceRsp.data
+    } catch (e) {
+        logout(e)
+    }
+}
 
-
-    // TODO: Napraviti da prvo ucita INVOICE DETAILS PO OVOM ID pa onda idi na vozila
-    // DRUGACIJE NE MOZE
-    const invoiceRsp = await InvoiceService.getInvoicesForVehicleId(id)
-    invoices.value = invoiceRsp.data
+function onArticleChange() {
+    invoiceArticle.value.price = articles.value?.find(a => a.articleId == invoiceArticle.value.articleId)?.price ?? 0
 }
 
 function doUpdate() {
-    MainService.useAxios(`/invoice/article/${id}`, 'put', invoiceArticle.value)
-        .then(rsp => router.push(`/invoice/${invoiceArticle.value?.invoiceId}/article`))
+    MainService.useAxios(`/invoice/article`, 'post', invoiceArticle.value)
+        .then(rsp => router.push(`/invoice/${id}/article`))
+        .catch(e => logout(e))
 }
 
-onMounted(()=>loadData())
+onMounted(() => loadData())
 </script>
 
 <template>
+    <Navigation />
     <nav aria-label="breadcrumb">
         <ol class="breadcrumb">
             <li class="breadcrumb-item">
@@ -54,22 +65,15 @@ onMounted(()=>loadData())
         </ol>
     </nav>
     <h3>Edit Invoice Article</h3>
-    <form v-if="invoiceArticle" v-on:submit.prevent="doUpdate()">
+    <form v-if="invoice" v-on:submit.prevent="doUpdate()">
         <div class="mb-3">
-            <label for="id" class="form-label">ID:</label>
-            <input type="number" class="form-control" id="id" v-model="invoiceArticle.invoiceArticleId" disabled>
-        </div>
-        <div class="mb-3" v-if="invoices">
-            <label for="invoice" class="form-label">Invoice:</label>
-            <select class="form-select" v-model="invoiceArticle.invoiceId" id="invoice">
-                <option v-for="i of invoices" :value="i.invoiceId">
-                    [ID: {{ i.invoiceId }}] Updated: {{ MainService.updatedAt(i) }}
-                </option>
-            </select>
+            <label for="id" class="form-label">Invoice:</label>
+            <input type="text" class="form-control" id="id"
+                :value="`#00${invoice.invoiceId} for ${invoice.vehicle.regPlate}`" disabled>
         </div>
         <div class="mb-3" v-if="articles">
             <label for="article" class="form-label">Article:</label>
-            <select class="form-select" v-model="invoiceArticle.articleId" id="article">
+            <select class="form-select" v-model="invoiceArticle.articleId" id="article" @change="onArticleChange()">
                 <option v-for="a of articles" :value="a.articleId">
                     {{ a.name }} ({{ a.price }} EUR)
                 </option>
@@ -81,11 +85,7 @@ onMounted(()=>loadData())
         </div>
         <div class="mb-3">
             <label for="time" class="form-label">Discount:</label>
-            <input type="number" class="form-control" id="time"  v-model="invoiceArticle.discount">
-        </div>
-        <div class="mb-3">
-            <label for="time" class="form-label">Updated At:</label>
-            <input type="text" class="form-control" id="time" :value="MainService.updatedAt(invoiceArticle)" disabled>
+            <input type="number" class="form-control" id="time" v-model="invoiceArticle.discount">
         </div>
         <button class="btn btn-primary tbn-success">
             <i class="fa-solid fa-floppy-disk"></i> Save Now

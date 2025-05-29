@@ -1,4 +1,6 @@
 <script lang="ts" setup>
+import Navigation from '@/components/Navigation.vue';
+import { useLogout } from '@/hooks/logout.hook';
 import type { InvoiceArticleModel } from '@/models/invoice.article.model';
 import type { InvoiceModel } from '@/models/invoice.model';
 import { MainService } from '@/services/main.service';
@@ -9,9 +11,11 @@ import { useRoute } from 'vue-router';
 const route = useRoute()
 const id = Number(route.params.id)
 const invoice = ref<InvoiceModel>()
+const logout = useLogout()
 
 MainService.useAxios(`/invoice/${id}/details`)
     .then(rsp => invoice.value = rsp.data)
+    .catch(e => logout(e))
 
 function doDelete(article: InvoiceArticleModel) {
     MainService.useAxios(`/invoice/article/${article.invoiceArticleId}`, 'delete')
@@ -21,6 +25,7 @@ function doDelete(article: InvoiceArticleModel) {
                 ia.invoiceArticleId !== article.invoiceArticleId
             )
         })
+        .catch(e => logout(e))
 }
 
 function calculateTotal() {
@@ -34,6 +39,7 @@ function calculateTotal() {
 </script>
 
 <template>
+    <Navigation />
     <nav aria-label="breadcrumb" v-if="invoice">
         <ol class="breadcrumb">
             <li class="breadcrumb-item">
